@@ -1,5 +1,5 @@
 CPPFLAGS=-Wall
-OBJS=main.o run-length.o
+OBJS=main.o run-length.o files.o
 EXEC=main
 
 all: $(EXEC)
