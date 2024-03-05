@@ -10,6 +10,11 @@
 #include "files.h"
 #include "node.h"
 
+#define KEY first
+#define LEN second
+
+typedef std::map<char,std::pair<int,char>> encoder_map;
+
 void get_frequencies(const int fd, std::map<char,int> &dict)
 {
     char element;
@@ -53,7 +58,7 @@ Node* create_tree (const std::map<char,int> &dict)
     return nodes.top();
 }
 
-void get_code (char code, std::map<char,char>& code_map, const Node* current)
+void get_code (std::pair<int,char> code, encoder_map& code_map, const Node* current)
 {
     if (current->is_leaf()) {
         Leaf *leaf = (Leaf*) current;
@@ -63,22 +68,17 @@ void get_code (char code, std::map<char,char>& code_map, const Node* current)
 
     Group *node = (Group*) current;
     if (node->get_left_child() != NULL) {
-        get_code(code << 1, code_map, node->get_left_child());
+        get_code({code.KEY << 1, code.LEN+1}, code_map, node->get_left_child());
     }
     if (node->get_right_child() != NULL) {
-        get_code((code << 1) + 1, code_map, node->get_right_child());
+        get_code({(code.KEY << 1) + 1, code.LEN+1}, code_map, node->get_right_child());
     }
 }
 
-void write_code (const std::string file, const std::map<char,char>& code)
-{
-    std::ofstream dict(file);
-    for (auto c : code) {
-        dict << c.first << '\n' << c.second << '\n';
-    }
-}
 
-void create_dict(const std::string file, std::map<char,char>& code)
+// file: file from which to generate the code
+// code: empty map to which the code is going to be written
+void create_dict(const std::string file, encoder_map& code)
 {
     int in_fd, out_fd;
     open_files(file, file + ".dic", in_fd, out_fd); // [dic]tionary file
@@ -87,13 +87,7 @@ void create_dict(const std::string file, std::map<char,char>& code)
     get_frequencies(in_fd, dict);
 
     Node *root = create_tree(dict);
-    get_code(0, code, root);
-    write_code(file + ".dic", code);
-
-    // TODO: Remove after debugging
-    for (auto m : code) {
-        printf("%d %c\n", m.second, m.first);
-    }
+    get_code({0,0}, code, root);
 
     close(in_fd);
     close(out_fd);
