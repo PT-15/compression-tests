@@ -1,6 +1,5 @@
 #include "run-length.h"
 
-#include <cstdio>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -20,7 +19,6 @@ void rle::compress(std::string file)
                 cnt++;
                 continue;
             }
-            printf("Writing %c%d to file\n", prev, cnt);
             write(out_fd, &prev, 1);
             write(out_fd, &cnt, 1);
             cnt = 1;
