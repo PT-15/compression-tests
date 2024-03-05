@@ -4,7 +4,7 @@
 int main (int argc, char *argv[])
 {
     std::string file;
-    if (argc > 0)
+    if (argc > 1)
         file = argv[1];
     else
         file = "test.txt";
