@@ -25,6 +25,7 @@ void rle::compress(std::string file)
             prev =  current;
         }
     }
+    write(out_fd, &current, 1);
 
     close(in_fd);
     close(out_fd);
