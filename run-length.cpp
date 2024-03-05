@@ -1,49 +1,11 @@
 #include "run-length.h"
 
 #include <cstdio>
-#include <fcntl.h>
 #include <unistd.h>
 
 #include "files.h"
 
 #define BUF_SIZE 1024
-
-char next_char (int fd)
-{
-    static long unsigned int pos = BUF_SIZE;
-    static char buffer [BUF_SIZE];
-    // static std::vector<char> buffer (BUF_SIZE,0);
-
-    if (pos >= BUF_SIZE) {
-        int error = read(fd, buffer, BUF_SIZE);
-        printf("Read %d bytes\n", error);
-        pos = 0;
-    }
-
-    return buffer[pos++];
-}
-
-void write_char (int fd, const char& info, bool flush = false)
-{
-    static long unsigned int pos = 0;
-    static char buffer [BUF_SIZE];
-
-    if (pos >= BUF_SIZE) {
-        int error = write(fd, &buffer, BUF_SIZE);
-        printf("Wrote %d bytes\n", error);
-        pos = 0;
-    }
-
-    if (info != '\000') {
-        buffer[pos] = info;
-        pos++;
-    }
-
-    if (flush) {
-        int error = write(fd, &buffer, pos);
-        printf("Wrote %d bytes\n", error);
-    }
-}
 
 void rle::compress(const std::string file)
 {
