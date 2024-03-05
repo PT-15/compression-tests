@@ -3,6 +3,6 @@
 #include <string>
 
 namespace rle {
-    void compress(std::string file);
-    void decompress(std::string file);
+    void compress(const std::string file);
+    void decompress(const std::string file);
 }

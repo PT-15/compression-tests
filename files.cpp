@@ -2,7 +2,7 @@
 
 #include <fcntl.h>
 
-void open_files (std::string in_name, std::string out_name, int &in_fd, int &out_fd)
+void open_files (const std::string in_name, const std::string out_name, int &in_fd, int &out_fd)
 {
     in_fd = open(in_name.c_str(), O_RDONLY);
     if (in_fd < 0) {

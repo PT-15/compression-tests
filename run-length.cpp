@@ -5,7 +5,7 @@
 
 #include "files.h"
 
-void rle::compress(std::string file)
+void rle::compress(const std::string file)
 {
     int in_fd, out_fd;
     open_files(file, file + ".rle", in_fd, out_fd);
@@ -31,7 +31,7 @@ void rle::compress(std::string file)
     close(out_fd);
 }
 
-void rle::decompress(std::string file)
+void rle::decompress(const std::string file)
 {
     int in_fd, out_fd;
     open_files(file, file.substr(0, file.size()-4), in_fd, out_fd);
