@@ -123,16 +123,22 @@ void write_dictionary (const std::string& file, Node* root)
 
     write_map_to_file(index_map, output, root);
     output.flush();
-
-    // TODO: Delete file object
 }
 
 void encode_file (File &input, File &output, encoder_map& code)
 {
+    output.write_int(2); // Placeholder for number of bits
+    output.flush();
+
+    // BUG: Bit count is not correct ???
+    int bits = 0;
     char element;
     while ((element = input.read_char()) != EOF && element != '\000') {
+        bits += code[element].second;
         output.write_bits(code[element]);
     }
+    output.move_to_start();
+    output.write_int(bits);
     output.flush();
 }
 
