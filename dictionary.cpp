@@ -153,7 +153,7 @@ void create_dict(const std::string file, encoder_map& code)
     get_code({0,0}, code, root);
     write_dictionary(file + ".dic", root);
 
-    // TODO: Delete node objects
+    delete_tree(root);
 }
 
 void dict::compress(const std::string &file)
@@ -170,4 +170,5 @@ void dict::compress(const std::string &file)
     encode_file (input, output, code);
     // TODO: Delete file objects
 }
+    delete_tree(root);
 }
