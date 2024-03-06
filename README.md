@@ -1,5 +1,17 @@
 # ATLAS GSoC Test
 
+## Usage
+Compile: make
+Execute:
+    ./main -option file
+    
+    Options can be:
+    -rc : run-length compress
+    -rd : run-length decompress
+    -dc : dictionary compress
+    -dd : dictionary decompress
+
+
 ## The compression algorithms
 #### Run Length Encoding
 
