@@ -94,7 +94,7 @@ void File::write_bits (std::pair<int,char> code)
     while (code.LEN > 0) {
         int offset = code.LEN - _bits_left;
         if (offset < 0) { // Fits in current byte
-            _buffer[_pos] += code.KEY << offset;
+            _buffer[_pos] += code.KEY << abs(offset);
             _bits_left -= code.LEN;
             code.LEN = 0;
         }
