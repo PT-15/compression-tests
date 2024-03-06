@@ -19,6 +19,7 @@ File::File (const std::string name, bool input)
         std::perror("Couldn't open file");
         exit(1);
     }
+    fstat(_fd, &_file_stats);
 }
 
 void File::refill_buffer()
@@ -128,7 +129,8 @@ void File::flush()
 
 int File::get_size()
 {
-    fstat(_fd, &file_stats);
+    return _file_stats.st_size; // Size in bytes
+}
 
     return file_stats.st_size; // Size in bytes
 }
