@@ -1,5 +1,6 @@
 #include "dictionary.h"
 
+#include <cstdio>
 #include <map>
 #include <queue>
 #include <unistd.h>
@@ -161,14 +162,9 @@ void dict::compress(const std::string &file)
     encoder_map code;
     create_dict(file, code);
     
-    for (auto p : code) {
-        printf("%c : %d with length %d\n", p.first, p.second.first, p.second.second);
-    }
-
     File input (file, true);
     File output (file + ".dc", false);
     encode_file (input, output, code);
-    // TODO: Delete file objects
 }
     delete_tree(root);
 }
