@@ -9,48 +9,47 @@
 
 void rle::compress(const std::string file)
 {
-    int in_fd, out_fd;
-    open_files(file, file + ".rle", in_fd, out_fd);
+    File input (file, true);
+    File output (file + ".rle", false);
 
-    char prev = next_char(in_fd);
+    char prev = input.read_char();
     if (prev == EOF && prev == '\000') {
         return;
     }
     char cnt = 1;
     char current;
-    while ((current = next_char(in_fd)) != EOF && current != '\000') {
+    while ((current = input.read_char()) != EOF && current != '\000') {
         if (current == prev)
             cnt++;
         else {
-            write_char(out_fd, prev);
-            write_char(out_fd, cnt);
+            output.write_char(prev);
+            output.write_char(cnt);
             cnt = 1;
             prev =  current;
         }
     }
-    write_char(out_fd, prev);
-    write_char(out_fd, cnt, true);
+    output.write_char(prev);
+    output.write_char(cnt);
+    output.flush();
 
-    close(in_fd);
-    close(out_fd);
+    // TODO: Delete file objects
 }
 
 void rle::decompress(const std::string file)
 {
-    int in_fd, out_fd;
-    open_files(file, file.substr(0, file.size()-4), in_fd, out_fd);
+    File input (file, true);
+    File output (file.substr(0, file.size()-4), false);
 
-    char value;
+    char element;
     char cnt;
-    while ((value = next_char(in_fd)) != EOF && value != '\000') {
-        cnt = next_char(in_fd);
+    while ((element = input.read_char()) != EOF && element != '\000') {
+        cnt = input.read_char();
 
         for (int i = 0; i < (int)cnt; i++) {
-            write_char(out_fd, value);
+            output.write_char(element);
         }
     }
-    write_char(out_fd, '\000', true);
+    output.flush();
 
-    close(in_fd);
-    close(out_fd);
+    // TODO: Delete file objects
 }
