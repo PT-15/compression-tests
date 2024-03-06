@@ -63,12 +63,12 @@ int File::read_int()
 {
     if (_pos >= BUF_SIZE)
         refill_buffer();
-        
+
     int ans = 0;
     char bytes = sizeof(int);
 
-    while (bytes--) {
-        ans += ((int)_buffer[_pos] << 8*(bytes-1));
+    for (int i = 0; i < bytes; i++) {
+        ans += ((int)_buffer[_pos] << (8*bytes));
         _pos++;
     }
 
