@@ -1,7 +1,5 @@
 #include "dictionary.h"
 
-#include <bitset>
-#include <fstream>
 #include <map>
 #include <queue>
 #include <unistd.h>
@@ -15,11 +13,12 @@
 
 typedef std::map<char,std::pair<int,char>> encoder_map;
 
-void get_frequencies(const int fd, std::map<char,int> &dict)
+void get_frequencies(const std::string file, std::map<char,int> &dict)
 {
     char element;
+    File input (file, true);
 
-    while (read(fd, &element, 1) > 0) {
+    while ((element = input.read_char()) != EOF && element != '\000') {
         dict[element]++;
     }
 }
@@ -68,27 +67,87 @@ void get_code (std::pair<int,char> code, encoder_map& code_map, const Node* curr
 
     Group *node = (Group*) current;
     if (node->get_left_child() != NULL) {
-        get_code({code.KEY << 1, code.LEN+1}, code_map, node->get_left_child());
+        get_code({(code.KEY << 1) + 1, code.LEN+1}, code_map, node->get_left_child());
     }
     if (node->get_right_child() != NULL) {
-        get_code({(code.KEY << 1) + 1, code.LEN+1}, code_map, node->get_right_child());
+        get_code({code.KEY << 1, code.LEN+1}, code_map, node->get_right_child());
     }
 }
 
+void create_idx_map (std::map<void*,int> &index_map, Node* root, int cnt)
+{
+    index_map[root] = cnt;
+    if (!root->is_leaf()) {
+        Group *g = (Group*) root;
+        create_idx_map(index_map, g->get_left_child(), cnt+1);
+        create_idx_map(index_map, g->get_right_child(), cnt+2);
+    }
+}
+
+void write_map_to_file(std::map<void*,int> &index_map, File &output, Node* root)
+{
+    if (root->is_leaf()) {
+        Leaf *leaf = (Leaf*) root;
+        output.write_char('1');
+        output.write_int(leaf->get_element());
+    }
+    else {
+        Group *node = (Group*) root;
+        output.write_char('0');
+        output.write_int(index_map[node->get_left_child()]);
+        output.write_int(index_map[node->get_right_child()]);
+        write_map_to_file(index_map, output, node->get_left_child());
+        write_map_to_file(index_map, output, node->get_right_child());
+    }
+}
+
+void write_dictionary (const std::string& file, Node* root)
+{
+    File output (file, false);
+    std::map<void*,int> index_map;
+    create_idx_map(index_map, root, 0);
+
+    write_map_to_file(index_map, output, root);
+    output.flush();
+
+    // TODO: Delete file object
+}
+
+void encode_file (File &input, File &output, encoder_map& code)
+{
+    char element;
+    while ((element = input.read_char()) != EOF && element != '\000') {
+        output.write_bits(code[element]);
+    }
+    output.flush();
+}
 
 // file: file from which to generate the code
 // code: empty map to which the code is going to be written
 void create_dict(const std::string file, encoder_map& code)
 {
-    int in_fd, out_fd;
-    open_files(file, file + ".dic", in_fd, out_fd); // [dic]tionary file
-
     std::map<char,int> dict;
-    get_frequencies(in_fd, dict);
+    get_frequencies(file, dict);
 
     Node *root = create_tree(dict);
     get_code({0,0}, code, root);
+    write_dictionary(file + ".dic", root);
 
-    close(in_fd);
-    close(out_fd);
+    // TODO: Delete node objects
+}
+
+void dict::compress(const std::string &file)
+{
+    encoder_map code;
+    create_dict(file, code);
+    
+    for (auto p : code) {
+        printf("%c : %d with length %d\n", p.first, p.second.first, p.second.second);
+    }
+
+    File input (file, true);
+    File output (file + ".dc", false);
+    encode_file (input, output, code);
+    // TODO: Delete file objects
+}
 }
