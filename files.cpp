@@ -125,3 +125,10 @@ void File::flush()
 {
     write_to_file(_pos);
 }
+
+int File::get_size()
+{
+    fstat(_fd, &file_stats);
+
+    return file_stats.st_size; // Size in bytes
+}

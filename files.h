@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <sys/stat.h>
 
 #define BUF_SIZE 1024
 
@@ -11,6 +12,7 @@ class File {
         unsigned char _bits_left = 8;
         unsigned char _mask = 128;
         char _buffer[BUF_SIZE] = {0};
+        struct stat file_stats;
 
         void refill_buffer();
         void write_to_file (int bytes);
@@ -27,5 +29,7 @@ class File {
         void write_int (const int info);
 
         void flush();
+
+        int get_size();
 };
 
