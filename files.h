@@ -21,6 +21,8 @@ class File {
         File (const std::string name, bool input);
         ~File();
 
+        void move_to_start();
+
         char read_char ();
         char read_bit ();
         int read_int();

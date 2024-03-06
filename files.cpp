@@ -28,6 +28,13 @@ void File::refill_buffer()
     _pos = 0;
 }
 
+void File::move_to_start()
+{
+    write_to_file(_pos);
+    lseek(_fd, 0, SEEK_SET);
+    _pos = 0;
+}
+
 
 char File::read_char()
 {
