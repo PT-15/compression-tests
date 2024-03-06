@@ -13,6 +13,20 @@
 
 typedef std::map<char,std::pair<int,char>> encoder_map;
 
+void delete_tree (Node* root)
+{
+    if (root->is_leaf()) {
+        delete root;
+        return;
+    }
+    
+    Group *node = (Group*) root;
+    delete_tree(node->get_left_child());
+    delete_tree(node->get_right_child());
+
+    delete node;
+}
+
 void get_frequencies(const std::string file, std::map<char,int> &dict)
 {
     char element;
