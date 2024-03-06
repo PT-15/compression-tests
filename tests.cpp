@@ -36,3 +36,5 @@ void Timer::print_time()
     std::cout << "Time: " << duration.count() << " microseconds\n";
 }
 
+Timer::~Timer() {}
+

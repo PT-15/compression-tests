@@ -6,6 +6,7 @@ class Node {
 
     public:
         Node(int frequency);
+        ~Node();
         int get_frequency() const;
         virtual bool is_leaf() const = 0;
 
@@ -21,6 +22,7 @@ class Leaf : public Node {
 
     public:
         Leaf(int frequency, char element);
+        ~Leaf();
         bool is_leaf() const;
         char get_element() const;
 };
@@ -32,6 +34,7 @@ class Group : public Node {
 
     public:
         Group(int frequency, Node *left, Node *right);
+        ~Group();
         bool is_leaf() const;
         Node* get_left_child() const;
         Node* get_right_child() const;

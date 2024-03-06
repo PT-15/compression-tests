@@ -19,6 +19,7 @@ class File {
 
     public:
         File (const std::string name, bool input);
+        ~File();
 
         char read_char ();
         char read_bit ();

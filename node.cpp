@@ -17,6 +17,8 @@ bool Node::Compare::operator() (Node *fst, Node *snd)
     return fst->get_frequency() > snd->get_frequency();
 }
 
+Node::~Node() {}
+
 ///////////////
 // LEAF NODE //
 ///////////////
@@ -34,6 +36,8 @@ bool Leaf::is_leaf() const {
 char Leaf::get_element() const {
     return _element;
 }
+
+Leaf::~Leaf() {}
 
 /////////////////
 // MIDDLE NODE //
@@ -57,3 +61,5 @@ Node* Group::get_left_child() const {
 Node* Group::get_right_child() const {
     return _right_child;
 }
+
+Group::~Group() {}
