@@ -3,52 +3,125 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define BUF_SIZE 1024
+#define KEY first
+#define LEN second
 
-void open_files (const std::string in_name, const std::string out_name, int &in_fd, int &out_fd)
+File::File (const std::string name, bool input)
 {
-    in_fd = open(in_name.c_str(), O_RDONLY);
-    if (in_fd < 0) {
-        std::perror("Couldn't open input file");
-        exit(1);
+    if (input) {
+        _fd = open(name.c_str(), O_RDONLY);
+        _pos = BUF_SIZE;
     }
+    else
+        _fd = open(name.c_str(), O_CREAT | O_TRUNC | O_WRONLY, 0644);
 
-    out_fd = open(out_name.c_str(), O_CREAT | O_TRUNC | O_WRONLY, 0644);
-    if (out_fd < 0) {
-        std::perror("Couldn't open output file");
+    if (_fd < 0) {
+        std::perror("Couldn't open file");
         exit(1);
     }
 }
 
-char next_char (int fd)
+void File::refill_buffer()
 {
-    static long unsigned int pos = BUF_SIZE;
-    static char buffer [BUF_SIZE];
-
-    if (pos >= BUF_SIZE) {
-        read(fd, buffer, BUF_SIZE);
-        pos = 0;
-    }
-
-    return buffer[pos++];
+    read(_fd, _buffer, BUF_SIZE);
+    _pos = 0;
 }
 
-void write_char (int fd, const char& info, bool flush)
+
+char File::read_char()
 {
-    static long unsigned int pos = 0;
-    static char buffer [BUF_SIZE];
+    if (_pos >= BUF_SIZE)
+        refill_buffer();
 
-    if (pos >= BUF_SIZE) {
-        write(fd, &buffer, BUF_SIZE);
-        pos = 0;
+    return _buffer[_pos++];
+}
+
+char File::read_bit ()
+{
+    if (_pos >= BUF_SIZE)
+        refill_buffer();
+
+    if (_buffer[_pos] == EOF || _buffer[_pos] == '\000') {
+        return -1;
     }
 
-    if (info != '\000') {
-        buffer[pos] = info;
-        pos++;
+    bool bit = _buffer[_pos] & _mask;
+    _mask >>= 1;
+    if (_mask == 0) {
+        _mask = 128;
+        _pos++;
     }
 
-    if (flush) {
-        write(fd, &buffer, pos);
+    return bit;
+}
+
+int File::read_int()
+{
+    if (_pos >= BUF_SIZE)
+        refill_buffer();
+        
+    int ans = 0;
+    char bytes = sizeof(int);
+
+    while (bytes--) {
+        ans += ((int)_buffer[_pos] << 8*(bytes-1));
+        _pos++;
     }
+
+    return ans;
+}
+
+void File::write_to_file (int bytes)
+{
+    write(_fd, &_buffer, bytes);
+    _pos = 0;
+}
+
+void File::write_char (const char& info)
+{
+    if (_pos >= BUF_SIZE)
+        write_to_file(BUF_SIZE);
+
+    _buffer[_pos] = info;
+    _pos++;
+}
+void File::write_bits (std::pair<int,char> code)
+{
+    if (_pos >= BUF_SIZE)
+        write_to_file(BUF_SIZE);
+
+    while (code.LEN > 0) {
+        int offset = code.LEN - _bits_left;
+        if (offset < 0) { // Fits in current byte
+            _buffer[_pos] += code.KEY << offset;
+            _bits_left -= code.LEN;
+            code.LEN = 0;
+        }
+        else {
+            _buffer[_pos] += code.KEY >> offset;
+            code.LEN -= _bits_left;
+            _bits_left = 8;
+            _pos++;
+        }
+    }
+}
+
+void File::write_int (const int info)
+{
+    if (_pos >= BUF_SIZE)
+        write_to_file(BUF_SIZE);
+
+    char bytes = sizeof(int);
+
+    while (bytes--) {
+        _buffer[_pos++] = info >> 8*(bytes-1);
+
+        if (_pos >= BUF_SIZE)
+            write_to_file(BUF_SIZE);
+    }
+}
+
+void File::flush()
+{
+    write_to_file(_pos);
 }
