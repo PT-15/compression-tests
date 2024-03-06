@@ -6,7 +6,7 @@ class Node {
 
     public:
         Node(int frequency);
-        ~Node();
+        virtual ~Node();
         int get_frequency() const;
         virtual bool is_leaf() const = 0;
 
