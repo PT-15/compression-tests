@@ -31,8 +31,6 @@ void rle::compress(const std::string file)
     output.write_char(prev);
     output.write_char(cnt);
     output.flush();
-
-    // TODO: Delete file objects
 }
 
 void rle::decompress(const std::string file)
@@ -50,6 +48,4 @@ void rle::decompress(const std::string file)
         }
     }
     output.flush();
-
-    // TODO: Delete file objects
 }
