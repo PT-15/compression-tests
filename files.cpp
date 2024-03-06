@@ -122,7 +122,7 @@ void File::write_int (const int info)
     char bytes = sizeof(int);
 
     while (bytes--) {
-        _buffer[_pos++] = info >> 8*(bytes-1);
+        _buffer[_pos++] = info >> (8*bytes);
 
         if (_pos >= BUF_SIZE)
             write_to_file(BUF_SIZE);
