@@ -9,7 +9,7 @@ Execute:
     -rc : run-length compress
     -rd : run-length decompress
     -dc : dictionary compress
-    -dd : dictionary decompress
+    -dd : dictionary decompress (specify both .dc and .dic files in that order)
 
 
 ## The compression algorithms
