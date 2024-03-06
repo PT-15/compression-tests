@@ -49,10 +49,6 @@ char File::read_bit ()
     if (_pos >= BUF_SIZE)
         refill_buffer();
 
-    if (_buffer[_pos] == EOF || _buffer[_pos] == '\000') {
-        return -1;
-    }
-
     bool bit = _buffer[_pos] & _mask;
     _mask >>= 1;
     if (_mask == 0) {
