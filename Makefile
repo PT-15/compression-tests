@@ -1,8 +1,7 @@
-CPPFLAGS=-Wall -g
+CPPFLAGS=-Wall
 OBJS=main.o run-length.o files.o dictionary.o node.o tests.o
 EXEC=main
 
-# TODO: Get rid of debugging flag
 
 all: $(EXEC)
 
