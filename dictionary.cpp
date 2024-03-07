@@ -170,5 +170,80 @@ void dict::compress(const std::string &file)
     File output (file + ".dc", false);
     encode_file (input, output, code);
 }
+
+void read_dictionary_file (std::vector<std::pair<int,int>> &nodes, File &dic_file)
+{
+    char current;
+    while ((current = dic_file.read_char()) != EOF && current != '\000') {
+        std::pair<int,int> tmp;
+        if (current == '0') { // It's a group node
+            tmp.first = dic_file.read_int();
+            tmp.second = dic_file.read_int();
+        }
+        else {
+            tmp.first = -1;
+            tmp.second = dic_file.read_int();
+        }
+        nodes.push_back(tmp);
+    }
+    dbg::msg("Read vector");
+    dbg::print_pairs_vector(nodes);
+}
+
+Node* recreate_dictionary (std::vector<std::pair<int,int>> &nodes, int idx)
+{
+    if (nodes[idx].first < 0) {
+        Leaf *leaf = new Leaf(0, nodes[idx].second);
+        return leaf;
+    }
+
+    Node* left = recreate_dictionary(nodes, nodes[idx].first);
+    Node* right = recreate_dictionary(nodes, nodes[idx].second);
+    Group *group = new Group(0, left, right);
+    return group;
+}
+
+Node* read_dictionary (const std::string &file)
+{
+    File dic_file (file, true);
+
+    std::vector<std::pair<int,int>> nodes;
+    read_dictionary_file(nodes, dic_file);
+
+    Node* root = recreate_dictionary (nodes, 0);
+    dbg::msg("Read tree");
+    dbg::print_tree(root);
+    return root;
+}
+
+void decode_file(File &input, File &output, Node* root)
+{
+    // BUG: Last element is not read correctly
+    Node* current = root;
+    int bits = input.read_int();
+    char bit;
+    while (bits--) {
+        if (current->is_leaf()) {
+            Leaf* leaf = (Leaf*) current;
+            output.write_char(leaf->get_element());
+            current = root;
+        }
+
+        bit = input.read_bit();
+        Group *node = (Group*) current;
+        if (bit == 1)
+            current = node->get_left_child();
+        else
+            current = node->get_right_child();
+    }
+    output.flush();
+}
+
+void dict::decompress(const std::string &file, const std::string &dictionary)
+{
+    File input (file, true);
+    File output (file.substr(0, file.size()-3), false);
+    Node *root = read_dictionary(dictionary);
+    decode_file(input, output, root);
     delete_tree(root);
 }
