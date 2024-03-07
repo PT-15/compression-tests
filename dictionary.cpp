@@ -89,13 +89,17 @@ void get_code (std::pair<int,char> code, encoder_map& code_map, const Node* curr
     }
 }
 
-void create_idx_map (std::map<void*,int> &index_map, Node* root, int cnt)
+void create_idx_map (std::map<void*,int> &index_map, Node *root)
 {
+    static int cnt = 0;
+
     index_map[root] = cnt;
+    cnt++;
+
     if (!root->is_leaf()) {
         Group *g = (Group*) root;
-        create_idx_map(index_map, g->get_left_child(), cnt+1);
-        create_idx_map(index_map, g->get_right_child(), cnt+2);
+        create_idx_map(index_map, g->get_left_child());
+        create_idx_map(index_map, g->get_right_child());
     }
 }
 
@@ -120,7 +124,7 @@ void write_dictionary (const std::string& file, Node* root)
 {
     File output (file, false);
     std::map<void*,int> index_map;
-    create_idx_map(index_map, root, 0);
+    create_idx_map(index_map, root);
 
     write_map_to_file(index_map, output, root);
     output.flush();
