@@ -103,7 +103,7 @@ void create_idx_map (std::map<void*,int> &index_map, Node *root)
     }
 }
 
-void write_map_to_file(std::map<void*,int> &index_map, File &output, Node* root)
+void write_tree_to_file(std::map<void*,int> &index_map, File &output, Node* root)
 {
     if (root->is_leaf()) {
         Leaf *leaf = (Leaf*) root;
@@ -115,8 +115,8 @@ void write_map_to_file(std::map<void*,int> &index_map, File &output, Node* root)
         output.write_char('0');
         output.write_int(index_map[node->get_left_child()]);
         output.write_int(index_map[node->get_right_child()]);
-        write_map_to_file(index_map, output, node->get_left_child());
-        write_map_to_file(index_map, output, node->get_right_child());
+        write_tree_to_file(index_map, output, node->get_left_child());
+        write_tree_to_file(index_map, output, node->get_right_child());
     }
 }
 
@@ -126,7 +126,7 @@ void write_dictionary (const std::string& file, Node* root)
     std::map<void*,int> index_map;
     create_idx_map(index_map, root);
 
-    write_map_to_file(index_map, output, root);
+    write_tree_to_file(index_map, output, root);
     output.flush();
 }
 
