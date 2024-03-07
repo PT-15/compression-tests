@@ -82,10 +82,10 @@ void get_code (std::pair<int,char> code, encoder_map& code_map, const Node* curr
 
     Group *node = (Group*) current;
     if (node->get_left_child() != NULL) {
-        get_code({(code.KEY << 1) + 1, code.LEN+1}, code_map, node->get_left_child());
+        get_code({code.KEY << 1, code.LEN+1}, code_map, node->get_left_child());
     }
     if (node->get_right_child() != NULL) {
-        get_code({code.KEY << 1, code.LEN+1}, code_map, node->get_right_child());
+        get_code({(code.KEY << 1) + 1, code.LEN+1}, code_map, node->get_right_child());
     }
 }
 
@@ -135,13 +135,14 @@ void encode_file (File &input, File &output, encoder_map& code)
     output.write_int(2); // Placeholder for number of bits
     output.flush();
 
-    // BUG: Bit count is not correct ???
     int bits = 0;
     char element;
     while ((element = input.read_char()) != EOF && element != '\000') {
         bits += code[element].second;
         output.write_bits(code[element]);
     }
+    output.write_bits(code[element]);
+    bits += code[element].second;
     output.move_to_start();
     output.write_int(bits);
     output.flush();
@@ -156,6 +157,7 @@ void create_dict(const std::string file, encoder_map& code)
 
     Node *root = create_tree(dict);
     get_code({0,0}, code, root);
+
     write_dictionary(file + ".dic", root);
 
     delete_tree(root);
@@ -186,8 +188,6 @@ void read_dictionary_file (std::vector<std::pair<int,int>> &nodes, File &dic_fil
         }
         nodes.push_back(tmp);
     }
-    dbg::msg("Read vector");
-    dbg::print_pairs_vector(nodes);
 }
 
 Node* recreate_dictionary (std::vector<std::pair<int,int>> &nodes, int idx)
@@ -211,14 +211,11 @@ Node* read_dictionary (const std::string &file)
     read_dictionary_file(nodes, dic_file);
 
     Node* root = recreate_dictionary (nodes, 0);
-    dbg::msg("Read tree");
-    dbg::print_tree(root);
     return root;
 }
 
 void decode_file(File &input, File &output, Node* root)
 {
-    // BUG: Last element is not read correctly
     Node* current = root;
     int bits = input.read_int();
     char bit;
