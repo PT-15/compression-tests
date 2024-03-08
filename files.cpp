@@ -3,6 +3,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "debug.h"
+
 #define KEY first
 #define LEN second
 
@@ -30,6 +32,7 @@ void File::refill_buffer()
 
 void File::move_to_start()
 {
+    _pos++;
     write_to_file(_pos);
     lseek(_fd, 0, SEEK_SET);
     _pos = 0;
@@ -67,7 +70,8 @@ int File::read_int()
     int ans = 0;
     char bytes = sizeof(int);
 
-    for (int i = 0; i < bytes; i++) {
+    // for (int i = 0; i < bytes; i++) {
+    while (bytes--) {
         ans += ((int)_buffer[_pos] << (8*bytes));
         _pos++;
     }
@@ -89,23 +93,49 @@ void File::write_char (const char& info)
     _buffer[_pos] = info;
     _pos++;
 }
-void File::write_bits (std::pair<int,char> code)
+
+void File::bits_to_char (unsigned char length, unsigned char key)
 {
     if (_pos >= BUF_SIZE)
         write_to_file(BUF_SIZE);
+    dbg::value("\tCode value", key);
+    dbg::value("\tCode length", length);
 
-    while (code.LEN > 0) {
-        int offset = code.LEN - _bits_left;
+    while (length > 0) {
+        int offset = length - _bits_left;
         if (offset < 0) { // Fits in current byte
-            _buffer[_pos] += code.KEY << abs(offset);
-            _bits_left -= code.LEN;
-            code.LEN = 0;
+            dbg::bits("\tBuffer value", _buffer[_pos]);
+            _buffer[_pos] += key << abs(offset);
+            dbg::bits("\tValue written", key << abs(offset));
+            dbg::bits("\tNew buffer value", _buffer[_pos]);
+            _bits_left -= length;
+            length = 0;
         }
         else {
-            _buffer[_pos] += code.KEY >> offset;
-            code.LEN -= _bits_left;
+            _buffer[_pos] += key >> offset;
+            length -= _bits_left;
             _bits_left = 8;
             _pos++;
+            _buffer[_pos] = 0; // Not valid if next byte is already in use
+        }
+    }
+}
+
+void File::write_bits (std::pair<int,char> code)
+{
+    int bytes = sizeof(int);
+    
+    const int key = code.first;
+    const int length = code.second;
+    dbg::msg("WRITING BITS");
+    dbg::value("Received key", key);
+    dbg::value("Received length", length);
+
+    while (bytes--) {
+        dbg::value("\tByte", bytes);
+        dbg::bits("\tValue", key >> (8*bytes));
+        if (bytes*8 < length) {
+            bits_to_char(length, key >> (8*bytes));
         }
     }
 }

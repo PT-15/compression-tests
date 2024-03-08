@@ -11,11 +11,12 @@ class File {
         long unsigned int _pos = 0;
         unsigned char _bits_left = 8;
         unsigned char _mask = 128;
-        char _buffer[BUF_SIZE] = {0};
+        unsigned char _buffer[BUF_SIZE] = {0};
         struct stat _file_stats;
 
         void refill_buffer();
         void write_to_file (int bytes);
+        void bits_to_char(unsigned char length, unsigned char key);
 
     public:
         File (const std::string name, bool input);

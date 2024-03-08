@@ -8,11 +8,12 @@
 
 #include "files.h"
 #include "node.h"
+#include "debug.h"
 
 #define KEY first
 #define LEN second
 
-typedef std::map<char,std::pair<int,char>> encoder_map;
+typedef std::map<char,std::pair<int,unsigned char>> encoder_map;
 
 void delete_tree (Node* root)
 {
@@ -82,10 +83,10 @@ void get_code (std::pair<int,char> code, encoder_map& code_map, const Node* curr
 
     Group *node = (Group*) current;
     if (node->get_left_child() != NULL) {
-        get_code({code.KEY << 1, code.LEN+1}, code_map, node->get_left_child());
+        get_code({(code.KEY << 1) + 1, code.LEN+1}, code_map, node->get_left_child());
     }
     if (node->get_right_child() != NULL) {
-        get_code({(code.KEY << 1) + 1, code.LEN+1}, code_map, node->get_right_child());
+        get_code({code.KEY << 1, code.LEN+1}, code_map, node->get_right_child());
     }
 }
 
@@ -138,11 +139,9 @@ void encode_file (File &input, File &output, encoder_map& code)
     int bits = 0;
     char element;
     while ((element = input.read_char()) != EOF && element != '\000') {
-        bits += code[element].second;
+        bits += (int)code[element].second;
         output.write_bits(code[element]);
     }
-    output.write_bits(code[element]);
-    bits += code[element].second;
     output.move_to_start();
     output.write_int(bits);
     output.flush();
@@ -220,18 +219,20 @@ void decode_file(File &input, File &output, Node* root)
     int bits = input.read_int();
     char bit;
     while (bits--) {
+        bit = input.read_bit();
+        if (!current->is_leaf()) {
+            Group *node = (Group*) current;
+            if (bit == 1)
+                current = node->get_left_child();
+            else
+                current = node->get_right_child();
+        }
+
         if (current->is_leaf()) {
             Leaf* leaf = (Leaf*) current;
             output.write_char(leaf->get_element());
             current = root;
         }
-
-        bit = input.read_bit();
-        Group *node = (Group*) current;
-        if (bit == 1)
-            current = node->get_left_child();
-        else
-            current = node->get_right_child();
     }
     output.flush();
 }
