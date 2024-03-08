@@ -121,7 +121,7 @@ void File::bits_to_char (unsigned char length, unsigned char key)
     }
 }
 
-void File::write_bits (std::pair<int,char> code)
+void File::write_bits (std::pair<long long,char> code)
 {
     int bytes = sizeof(int);
     

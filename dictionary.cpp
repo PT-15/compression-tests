@@ -13,7 +13,7 @@
 #define KEY first
 #define LEN second
 
-typedef std::map<char,std::pair<int,unsigned char>> encoder_map;
+typedef std::map<char,std::pair<long long,char>> encoder_map;
 
 void delete_tree (Node* root)
 {

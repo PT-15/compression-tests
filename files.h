@@ -29,7 +29,7 @@ class File {
         int read_int();
 
         void write_char (const char& info);
-        void write_bits (std::pair<int,char> code);
+        void write_bits (std::pair<long long,char> code);
         void write_int (const int info);
 
         void flush();
