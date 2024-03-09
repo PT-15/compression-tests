@@ -1,5 +1,5 @@
-CPPFLAGS=-Wall
-OBJS=main.o run-length.o files.o dictionary.o node.o tests.o compare-methods.o
+CPPFLAGS=-Wall -g
+OBJS=main.o run-length.o files.o dictionary.o node.o timer.o compare-methods.o
 EXEC=main
 
 
