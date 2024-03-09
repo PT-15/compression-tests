@@ -1,5 +1,5 @@
 CPPFLAGS=-Wall
-OBJS=main.o run-length.o files.o dictionary.o node.o tests.o
+OBJS=main.o run-length.o files.o dictionary.o node.o tests.o compare-methods.o
 EXEC=main
 
 
