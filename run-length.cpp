@@ -7,7 +7,7 @@
 
 #define BUF_SIZE 1024
 
-void rle::compress(const std::string file)
+void rle::compress(const std::string &file)
 {
     File input (file, true);
     File output (file + ".rle", false);
@@ -33,7 +33,7 @@ void rle::compress(const std::string file)
     output.flush();
 }
 
-void rle::decompress(const std::string file)
+void rle::decompress(const std::string &file)
 {
     File input (file, true);
     File output (file.substr(0, file.size()-4), false);
