@@ -30,6 +30,7 @@ void rle::compress(const std::string &file)
     }
     output.write_char(prev);
     output.write_char(cnt);
+    output.write_char(current); // Write EOF
     output.flush();
 }
 
