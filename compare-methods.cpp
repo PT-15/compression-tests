@@ -48,6 +48,8 @@ void compare_compression (std::string file)
     float dict_cr = (float)original.get_size() / (float)dict_total;
     std::cout << rle_cr << " : rle compression ratio\n";
     std::cout << dict_cr << " : dictionary compression ratio\n";
+    dict_cr = (float)original.get_size() / (float)dict_compressed.get_size();
+    std::cout << dict_cr << " : dictionary compression ratio without dictionary\n";
 
     original.close_file();
     rle_compressed.close_file();
@@ -66,16 +68,16 @@ void compare_times (std::string file)
     std::cout << "\tRun length encoding: " << rle_comp_t << " milisecond\n";
     std::cout << "\tDictionary encoding: " << dict_comp_t << " milisecond\n";
     std::string fastest = rle_comp_t > dict_comp_t ? "Dictionary encoding" : "Run length encoding";
-    std::cout << fastest << " was " <<
-        std::max(rle_comp_t, dict_comp_t) / std::min(rle_comp_t, dict_comp_t) <<
+    std::cout << "\t" << fastest << " was " <<
+        (float)std::max(rle_comp_t, dict_comp_t) / (float)std::min(rle_comp_t, dict_comp_t) <<
         " times faster\n";
 
     std::cout << "Decompression:\n";
     std::cout << "\tRun length encoding: " << rle_decomp_t << " milisecond\n";
     std::cout << "\tDictionary encoding: " << dict_decomp_t << " milisecond\n";
     fastest = rle_decomp_t > dict_decomp_t ? "Dictionary encoding" : "Run length encoding";
-    std::cout << fastest << " was " <<
-        std::max(rle_decomp_t, dict_decomp_t) / std::min(rle_decomp_t, dict_decomp_t) <<
+    std::cout << "\t" << fastest << " was " <<
+        (float)std::max(rle_decomp_t, dict_decomp_t) / (float)std::min(rle_decomp_t, dict_decomp_t) <<
         " times faster\n";
 }
 
@@ -86,4 +88,5 @@ void compare_methods (char *name)
     compare_compression(file);
     std::cout << "\n";
     compare_times(file);
+    std::cout << "\n";
 }
