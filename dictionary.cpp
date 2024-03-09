@@ -8,7 +8,6 @@
 
 #include "files.h"
 #include "node.h"
-#include "debug.h"
 
 #define KEY first
 #define LEN second
@@ -129,6 +128,7 @@ void write_dictionary (const std::string& file, Node* root)
 
     write_tree_to_file(index_map, output, root);
     output.flush();
+    output.close_file();
 }
 
 void encode_file (File &input, File &output, encoder_map& code)
@@ -170,6 +170,8 @@ void dict::compress(const std::string &file)
     File input (file, true);
     File output (file + ".dc", false);
     encode_file (input, output, code);
+    input.close_file();
+    output.close_file();
 }
 
 void read_dictionary_file (std::vector<std::pair<int,int>> &nodes, File &dic_file)
@@ -244,4 +246,6 @@ void dict::decompress(const std::string &file, const std::string &dictionary)
     Node *root = read_dictionary(dictionary);
     decode_file(input, output, root);
     delete_tree(root);
+    input.close_file();
+    output.close_file();
 }
