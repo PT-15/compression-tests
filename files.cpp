@@ -156,6 +156,11 @@ int File::get_size()
     return _file_stats.st_size; // Size in bytes
 }
 
+void File::close_file()
+{
+    close(_fd);
+}
+
 File::~File()
 {
     close(_fd);

@@ -21,6 +21,7 @@ class File {
     public:
         File (const std::string name, bool input);
         ~File();
+        void close_file();
 
         void move_to_start();
 
