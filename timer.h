@@ -4,8 +4,6 @@
 #include <string>
 #include <chrono>
 
-void compression_ratio (const std::string original_s, const std::string compressed_s);
-
 class Timer {
     private:
         typedef std::chrono::time_point<std::chrono::high_resolution_clock> chrono_time ;
