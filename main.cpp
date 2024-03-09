@@ -54,35 +54,5 @@ int main (int argc, char *argv[])
         printf("Error: not a valid parameter\n");
     }
 
-    // if (mode == "-rc") {
-    //     time.start();
-    //     rle::compress(file);
-    //     time.stop();
-    //     compression_ratio(file, file + ".rle");
-    //     std::cout << "Time: " << time.get_time() << " microseconds\n";
-    // }
-    // else if (mode == "-rd") {
-    //     time.start();
-    //     rle::decompress(file);
-    //     time.stop();
-    //     std::cout << "Time: " << time.get_time() << " microseconds\n";
-    // }
-    // else if (mode == "-dc") {
-    //     time.start();
-    //     dict::compress(file);
-    //     time.stop();
-    //     compression_ratio(file, file + ".dc");
-    //     std::cout << "Time: " << time.get_time() << " microseconds\n";
-    // }
-    // else if (mode == "-dd") {
-    //     time.start();
-    //     dict::decompress(file, (std::string)argv[3]);
-    //     time.stop();
-    //     std::cout << "Time: " << time.get_time() << " microseconds\n";
-    // }
-    // else {
-    //     printf("Error: wrong option\n");
-    // }
-
     return 0;
 }
