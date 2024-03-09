@@ -98,16 +98,11 @@ void File::bits_to_char (unsigned char length, unsigned char key)
 {
     if (_pos >= BUF_SIZE)
         write_to_file(BUF_SIZE);
-    dbg::value("\tCode value", key);
-    dbg::value("\tCode length", length);
 
     while (length > 0) {
         int offset = length - _bits_left;
         if (offset < 0) { // Fits in current byte
-            dbg::bits("\tBuffer value", _buffer[_pos]);
             _buffer[_pos] += key << abs(offset);
-            dbg::bits("\tValue written", key << abs(offset));
-            dbg::bits("\tNew buffer value", _buffer[_pos]);
             _bits_left -= length;
             length = 0;
         }
@@ -123,19 +118,15 @@ void File::bits_to_char (unsigned char length, unsigned char key)
 
 void File::write_bits (std::pair<long long,char> code)
 {
-    int bytes = sizeof(int);
+    int bytes = sizeof(long long);
     
-    const int key = code.first;
-    const int length = code.second;
-    dbg::msg("WRITING BITS");
-    dbg::value("Received key", key);
-    dbg::value("Received length", length);
+    const long long key = code.first;
+    int length = code.second;
 
     while (bytes--) {
-        dbg::value("\tByte", bytes);
-        dbg::bits("\tValue", key >> (8*bytes));
         if (bytes*8 < length) {
-            bits_to_char(length, key >> (8*bytes));
+            bits_to_char(length - bytes*8, key >> (8*bytes));
+            length -= (length - bytes*8);
         }
     }
 }
