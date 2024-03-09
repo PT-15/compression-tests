@@ -4,6 +4,6 @@
 
 namespace dict {
     void compress(const std::string &file);
-    void decompress(const std::string &file, const std::string &dictionary);
+    void decompress(const std::string &file);
 }
 

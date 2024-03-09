@@ -239,11 +239,11 @@ void decode_file(File &input, File &output, Node* root)
     output.flush();
 }
 
-void dict::decompress(const std::string &file, const std::string &dictionary)
+void dict::decompress(const std::string &file)
 {
     File input (file, true);
     File output (file.substr(0, file.size()-3), false);
-    Node *root = read_dictionary(dictionary);
+    Node *root = read_dictionary(file.substr(0, file.size()-3) + ".dic");
     decode_file(input, output, root);
     delete_tree(root);
     input.close_file();
