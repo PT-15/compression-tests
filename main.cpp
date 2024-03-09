@@ -1,7 +1,10 @@
 #include <string>
+#include <iostream>
 #include "run-length.h"
 #include "dictionary.h"
 #include "tests.h"
+
+#define REPS 100
 
 int main (int argc, char *argv[])
 {
@@ -21,26 +24,29 @@ int main (int argc, char *argv[])
         rle::compress(file);
         time.stop();
         compression_ratio(file, file + ".rle");
-        time.print_time();
+        std::cout << "Time: " << time.get_time() << " microseconds\n";
     }
     else if (mode == "-rd") {
         time.start();
         rle::decompress(file);
         time.stop();
-        time.print_time();
+        std::cout << "Time: " << time.get_time() << " microseconds\n";
     }
     else if (mode == "-dc") {
         time.start();
         dict::compress(file);
         time.stop();
         compression_ratio(file, file + ".dc");
-        time.print_time();
+        std::cout << "Time: " << time.get_time() << " microseconds\n";
     }
     else if (mode == "-dd") {
         time.start();
         dict::decompress(file, (std::string)argv[3]);
         time.stop();
-        time.print_time();
+        std::cout << "Time: " << time.get_time() << " microseconds\n";
+    }
+    else {
+        printf("Error: wrong option\n");
     }
 
     return 0;
