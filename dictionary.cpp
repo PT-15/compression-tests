@@ -92,6 +92,8 @@ void get_code (std::pair<int,char> code, encoder_map& code_map, const Node* curr
 void create_idx_map (std::map<void*,int> &index_map, Node *root)
 {
     static int cnt = 0;
+    if (index_map.empty())
+        cnt = 0;
 
     index_map[root] = cnt;
     cnt++;
@@ -122,10 +124,10 @@ void write_tree_to_file(std::map<void*,int> &index_map, File &output, Node* root
 
 void write_dictionary (const std::string& file, Node* root)
 {
-    File output (file, false);
     std::map<void*,int> index_map;
     create_idx_map(index_map, root);
 
+    File output (file, false);
     write_tree_to_file(index_map, output, root);
     output.flush();
     output.close_file();
