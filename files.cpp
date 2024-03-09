@@ -2,8 +2,7 @@
 
 #include <fcntl.h>
 #include <unistd.h>
-
-#include "debug.h"
+#include <cstring>
 
 #define KEY first
 #define LEN second
@@ -18,7 +17,8 @@ File::File (const std::string name, bool input)
         _fd = open(name.c_str(), O_CREAT | O_TRUNC | O_WRONLY, 0644);
 
     if (_fd < 0) {
-        std::perror("Couldn't open file");
+        printf("Could not open file %s: %s\n", name.c_str(),
+                strerror(errno));
         exit(1);
     }
     fstat(_fd, &_file_stats);
