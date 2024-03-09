@@ -41,4 +41,7 @@ namespace dbg {
     void print_tree_map (Node* root, std::map<void*,int> &index_map);
     void graph_to_img (Node* root);
     void graph_to_img_with_code (Node* root, std::map<char,std::pair<long long,char>> code);
+
+    // Program specific
+    void print_encoding (char element, std::map<char,std::pair<long long,char>> &code);
 }

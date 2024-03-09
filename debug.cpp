@@ -111,3 +111,11 @@ void dbg::graph_to_img_with_code (Node* root, std::map<char,std::pair<long long,
     print_graph_with_code(root, output, code);
     output << "}\n";
 }
+
+// Program specific
+void print_encoding (char element, std::map<char,std::pair<long long,char>> &code) {
+    std::bitset<64> bits (code[element].first);
+    std::string str = bits.to_string();
+    std::cout << "Encode " << element << " as ";
+    std::cout << str.substr(str.size()-code[element].second, str.size()) << std::endl;
+}
